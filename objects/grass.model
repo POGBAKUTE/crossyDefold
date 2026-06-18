@@ -1,0 +1,4 @@
+mesh: "/assets/models/environment/grass/model.gltf"
+material: "/render/tile_lit.material"
+textures: "/assets/models/environment/grass/light-grass.png"
+name: "grass"

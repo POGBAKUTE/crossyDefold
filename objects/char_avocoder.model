@@ -1,0 +1,4 @@
+mesh: "/assets/models/characters/avocoder/avocoder.gltf"
+material: "/render/model_lit.material"
+textures: "/assets/models/characters/avocoder/avocoder.png"
+name: "char_avocoder"

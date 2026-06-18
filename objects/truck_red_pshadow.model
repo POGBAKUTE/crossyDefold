@@ -1,0 +1,3 @@
+mesh: "/assets/models/vehicles/red_truck/0.gltf"
+material: "/render/model_planar_shadow.material"
+name: "truck_red_pshadow"

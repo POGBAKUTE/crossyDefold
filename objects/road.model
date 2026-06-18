@@ -1,0 +1,4 @@
+mesh: "/assets/models/environment/road/model.gltf"
+material: "/render/tile_lit.material"
+textures: "/assets/models/environment/road/blank-texture.png"
+name: "road"

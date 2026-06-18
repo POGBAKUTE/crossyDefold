@@ -1,0 +1,3 @@
+mesh: "/render/quad.gltf"
+material: "/render/shadow.material"
+name: "shadow"

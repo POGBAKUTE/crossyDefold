@@ -1,0 +1,17 @@
+name: "model_planar_shadow"
+tags: "planar_shadow"
+vertex_program: "/render/planar_shadow.vp"
+fragment_program: "/render/planar_shadow.fp"
+vertex_space: VERTEX_SPACE_LOCAL
+vertex_constants {
+  name: "mtx_world"
+  type: CONSTANT_TYPE_WORLD
+}
+vertex_constants {
+  name: "mtx_view"
+  type: CONSTANT_TYPE_VIEW
+}
+vertex_constants {
+  name: "mtx_proj"
+  type: CONSTANT_TYPE_PROJECTION
+}

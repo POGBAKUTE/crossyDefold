@@ -1,0 +1,4 @@
+mesh: "/assets/models/characters/bacon/bacon.gltf"
+material: "/render/model_lit.material"
+textures: "/assets/models/characters/bacon/bacon.png"
+name: "char_bacon"

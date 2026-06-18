@@ -1,0 +1,29 @@
+#version 140
+
+in highp vec4 position;
+in mediump vec2 texcoord0;
+in mediump vec3 normal;
+
+out mediump vec2 var_texcoord0;
+out mediump vec3 var_normal;
+out highp vec4 var_light_pos;
+out mediump float var_use_shadow;
+
+uniform vs_uniforms {
+    mediump mat4 mtx_worldview;
+    mediump mat4 mtx_proj;
+    mediump mat4 mtx_normal;
+    highp   mat4 mtx_world;
+    highp   mat4 light_vp;
+    mediump vec4 use_shadow;
+};
+
+void main()
+{
+    vec4 p = mtx_worldview * vec4(position.xyz, 1.0);
+    var_texcoord0 = texcoord0;
+    var_normal = normalize((mtx_normal * vec4(normal, 0.0)).xyz);
+    var_light_pos = light_vp * mtx_world * vec4(position.xyz, 1.0);
+    var_use_shadow = use_shadow.x;
+    gl_Position = mtx_proj * p;
+}

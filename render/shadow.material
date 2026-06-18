@@ -1,0 +1,9 @@
+name: "shadow"
+tags: "shadow"
+vertex_program: "/render/shadow.vp"
+fragment_program: "/render/shadow.fp"
+vertex_space: VERTEX_SPACE_LOCAL
+vertex_constants {
+  name: "mtx_worldviewproj"
+  type: CONSTANT_TYPE_WORLDVIEWPROJ
+}

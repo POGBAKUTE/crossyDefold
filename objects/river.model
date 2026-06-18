@@ -1,0 +1,4 @@
+mesh: "/assets/models/environment/river/0.gltf"
+material: "/render/tile_lit.material"
+textures: "/assets/models/environment/river/0.png"
+name: "river"

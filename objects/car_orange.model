@@ -1,0 +1,4 @@
+mesh: "/assets/models/vehicles/orange_car/0.gltf"
+material: "/render/model_lit.material"
+textures: "/assets/models/vehicles/orange_car/0.png"
+name: "car_orange"

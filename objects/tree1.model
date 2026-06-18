@@ -1,0 +1,4 @@
+mesh: "/assets/models/environment/tree/1/0.gltf"
+material: "/render/model_lit.material"
+textures: "/assets/models/environment/tree/1/0.png"
+name: "tree1"

@@ -1,0 +1,21 @@
+platforms:
+    x86_64-macos:
+        context:
+            excludeLibs: ["physics", "physics_null", "LinearMath", "BulletDynamics", "BulletCollision", "Box2D", "record", "vpx"]
+            excludeSymbols: ["ProfilerExt", "RecordExt"]
+    x86_64-win32:
+        context:
+            excludeLibs: ["physics", "physics_null", "LinearMath", "BulletDynamics", "BulletCollision", "Box2D", "record", "vpx"]
+            excludeSymbols: ["ProfilerExt", "RecordExt"]
+    wasm-web:
+        context:
+            excludeLibs: ["physics", "physics_null", "LinearMath", "BulletDynamics", "BulletCollision", "Box2D", "record", "vpx"]
+            excludeSymbols: ["ProfilerExt", "RecordExt"]
+    arm64-android:
+        context:
+            excludeLibs: ["physics", "physics_null", "LinearMath", "BulletDynamics", "BulletCollision", "Box2D", "record", "vpx"]
+            excludeSymbols: ["ProfilerExt", "RecordExt"]
+    arm64-ios:
+        context:
+            excludeLibs: ["physics", "physics_null", "LinearMath", "BulletDynamics", "BulletCollision", "Box2D", "record", "vpx"]
+            excludeSymbols: ["ProfilerExt", "RecordExt"]

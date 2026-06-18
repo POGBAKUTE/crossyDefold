@@ -1,0 +1,444 @@
+-- Crossy Road clone (Defold 3D) -----------------------------------------------
+local SIZES = require("main.model_sizes").sizes
+
+-- World / grid -----------------------------------------------------------------
+local TILE     = 1.0
+local COL_MIN  = -3
+local COL_MAX  = 3
+local PLAYER_Y = 0.0
+local PLAYER_HALF   = 0.22
+local PLAYER_LOG_HALF = 0.20
+
+local GRASS_H  = 0.375
+local ROAD_H   = 0.25
+local RIVER_H  = 0.125
+
+local START_SAFE = 3
+local AHEAD       = 14
+local BEHIND      = 6
+local SPAWN_X     = 8.0
+
+local HOP_T = 0.13
+local HOP_H = 0.45
+
+local STATE_MENU        = 0
+local STATE_PLAYING     = 1
+local STATE_DEAD        = 2
+local STATE_CHAR_SELECT = 3
+
+-- Gameplay camera
+local EYE_Y      = 9.0
+local EYE_BACK   = 10.0
+local CAM_YAW    = 28
+local LOOK_AHEAD = 2.0
+local FOV        = 38
+local UP         = vmath.vector3(0, 1, 0)
+
+-- Preview camera (char select)
+local PREV_EYE   = vmath.vector3(1.5, 2.5, 4.5)
+local PREV_LOOK  = vmath.vector3(0, 0.4, 0)
+local PREV_FOV   = math.rad(42)
+
+local LOG_YAW    = 0
+
+local VEHICLES = { "car_blue", "car_green", "car_orange", "car_purple", "car_taxi", "truck_blue", "truck_red" }
+local LOGS   = { "log0", "log1", "log2", "log3" }
+local TREES  = { "tree0", "tree1", "tree2", "tree3" }
+local LOG_Y  = -0.3
+
+local YAW = {
+	up    = math.rad(180),
+	down  = math.rad(0),
+	left  = math.rad(270),
+	right = math.rad(90),
+}
+
+-- Characters: { player factory id, preview factory id, display name }
+local CHARACTERS = {
+	{ player = "#f_player",          preview = "#f_preview_chicken",  name = "Chicken"  },
+	{ player = "#f_player_avocoder", preview = "#f_preview_avocoder", name = "Avocoder" },
+	{ player = "#f_player_bacon",    preview = "#f_preview_bacon",    name = "Bacon"    },
+}
+
+-- forward declarations
+local gen_row, recycle, clear_world, start_game, die, on_hop_done, try_hop
+local send_camera, send_preview_camera, spawn_preview, destroy_preview
+
+local function rround(x) return math.floor(x + 0.5) end
+local function choice(t) return t[math.random(1, #t)] end
+
+-- Camera -----------------------------------------------------------------------
+send_camera = function(self)
+	local cz = -(self.cam_row * TILE) - LOOK_AHEAD
+	local yaw = math.rad(CAM_YAW)
+	local eye = vmath.vector3(EYE_BACK * math.sin(yaw), EYE_Y, cz + EYE_BACK * math.cos(yaw))
+	local look = vmath.vector3(0, 0, cz)
+	msg.post("@render:", "set_cam", { eye = eye, look = look, fov = math.rad(FOV) })
+end
+
+send_preview_camera = function()
+	msg.post("@render:", "set_cam", { eye = PREV_EYE, look = PREV_LOOK, fov = PREV_FOV })
+end
+
+spawn_preview = function(self, char_idx)
+	destroy_preview(self)
+	local ch = CHARACTERS[char_idx]
+	self.preview_id = factory.create(ch.preview, vmath.vector3(0, PLAYER_Y, 0),
+		vmath.quat_rotation_y(math.rad(180)))
+	go.animate(self.preview_id, "euler.y", go.PLAYBACK_LOOP_FORWARD, 360, go.EASING_LINEAR, 3.5)
+end
+
+destroy_preview = function(self)
+	if self.preview_id then
+		go.cancel_animations(self.preview_id)
+		go.delete(self.preview_id)
+		self.preview_id = nil
+	end
+end
+
+-- Lane generation --------------------------------------------------------------
+local function setup_movers(row, kinds, is_log, z)
+	local dir = (math.random() < 0.5) and 1 or -1
+	local speed, gap_min, gap_extra
+	if is_log then
+		speed     = 0.8 + math.random() * 2.0
+		gap_min   = 2.0
+		gap_extra = 4.0
+	else
+		local tier = math.random()
+		if tier < 0.35 then
+			speed     = 0.6 + math.random() * 0.8
+			gap_min   = 3.0; gap_extra = 5.0
+		elseif tier < 0.75 then
+			speed     = 1.8 + math.random() * 1.4
+			gap_min   = 4.0; gap_extra = 6.0
+		else
+			speed     = 3.5 + math.random() * 2.0
+			gap_min   = 5.0; gap_extra = 7.0
+		end
+	end
+	local rot
+	if is_log then
+		rot = vmath.quat_rotation_y(math.rad(LOG_YAW))
+	else
+		rot = vmath.quat_rotation_y(dir > 0 and math.rad(90) or math.rad(-90))
+	end
+
+	local items, cursor = {}, 0.0
+	while cursor < SPAWN_X * 2 do
+		local kind = choice(kinds)
+		local sz   = SIZES[kind]
+		local half = is_log and (sz.x / 2) or (sz.z / 2 * 0.82)
+		local gap  = gap_min + math.random() * gap_extra
+		cursor = cursor + half
+		items[#items + 1] = { kind = kind, half = half, off = cursor }
+		cursor = cursor + half + gap
+	end
+
+	local span = cursor
+	local lo = -span / 2
+	local my = is_log and LOG_Y or 0
+	row.span = span
+	row.lo = lo
+	for _, it in ipairs(items) do
+		local x = lo + it.off
+		local id = factory.create("#f_" .. it.kind, vmath.vector3(x, my, z), rot)
+		table.insert(row.movers, { id = id, x = x, vx = dir * speed, half_len = it.half, y = my })
+	end
+end
+
+gen_row = function(self, r)
+	if self.rows[r] then return end
+	local z = -r * TILE
+	local row = { r = r, type = "grass", tile_ids = {}, decor = {}, blocked = {}, movers = {} }
+
+	if r <= START_SAFE then
+		row.type = "grass"
+	else
+		local p1 = self.rows[r - 1] and self.rows[r - 1].type
+		local p2 = self.rows[r - 2] and self.rows[r - 2].type
+		local roll = math.random()
+		if p1 == "river" and p2 == "river" then
+			row.type = (roll < 0.5) and "grass" or "road"
+		elseif roll < 0.40 then row.type = "grass"
+		elseif roll < 0.78 then row.type = "road"
+		else row.type = "river" end
+	end
+
+	if row.type == "grass" then
+		local fac = (r % 2 == 0) and "#f_grass" or "#f_grass_dark"
+		table.insert(row.tile_ids, factory.create(fac, vmath.vector3(0, -GRASS_H, z)))
+		if r > START_SAFE then
+			local blocked = 0
+			for c = COL_MIN, COL_MAX do
+				if math.random() < 0.18 and blocked < (COL_MAX - COL_MIN - 2) then
+					local id = factory.create("#f_" .. choice(TREES), vmath.vector3(c, 0, z))
+					row.decor[c] = id
+					row.blocked[c] = true
+					blocked = blocked + 1
+				end
+			end
+		end
+	elseif row.type == "road" then
+		table.insert(row.tile_ids, factory.create("#f_road", vmath.vector3(0, -ROAD_H, z)))
+		setup_movers(row, VEHICLES, false, z)
+	elseif row.type == "river" then
+		table.insert(row.tile_ids, factory.create("#f_river", vmath.vector3(0, -RIVER_H, z)))
+		setup_movers(row, LOGS, true, z)
+	end
+
+	self.rows[r] = row
+	if r > self.gen_row then self.gen_row = r end
+end
+
+recycle = function(self)
+	local cutoff = self.player_row - BEHIND
+	for r, row in pairs(self.rows) do
+		if r < cutoff then
+			for _, id in ipairs(row.tile_ids) do go.delete(id) end
+			for _, id in pairs(row.decor) do go.delete(id) end
+			for _, m in ipairs(row.movers) do go.delete(m.id) end
+			self.rows[r] = nil
+		end
+	end
+end
+
+clear_world = function(self)
+	for _, row in pairs(self.rows or {}) do
+		for _, id in ipairs(row.tile_ids) do go.delete(id) end
+		for _, id in pairs(row.decor) do go.delete(id) end
+		for _, m in ipairs(row.movers) do go.delete(m.id) end
+	end
+	self.rows = {}
+	if self.player_id then go.delete(self.player_id); self.player_id = nil end
+end
+
+-- Game flow --------------------------------------------------------------------
+start_game = function(self)
+	clear_world(self)
+	self.hopping = false
+	self.player_row = 0
+	self.player_col = 0
+	self.player_x = 0
+	self.max_row = 0
+	self.cam_row = 0
+	self.gen_row = -1
+	for r = -10, -1 do gen_row(self, r) end
+	for r = 0, START_SAFE + AHEAD do gen_row(self, r) end
+	local ch = CHARACTERS[self.selected_char_idx]
+	self.player_id = factory.create(ch.player, vmath.vector3(0, PLAYER_Y, 0),
+		vmath.quat_rotation_y(YAW.up))
+	msg.post("#gui", "reset")
+end
+
+die = function(self, cause)
+	if self.state == STATE_DEAD then return end
+	self.state = STATE_DEAD
+	go.cancel_animations(self.player_id)
+	if cause == "water" then
+		msg.post("#snd_water", "play_sound")
+		go.animate(self.player_id, "position.y", go.PLAYBACK_ONCE_FORWARD, -0.7, go.EASING_INQUAD, 0.5)
+	else
+		msg.post("#snd_die", "play_sound")
+		go.animate(self.player_id, "scale.y", go.PLAYBACK_ONCE_FORWARD, 0.12, go.EASING_OUTQUAD, 0.12)
+	end
+	msg.post("#gui", "game_over", { score = self.max_row })
+end
+
+on_hop_done = function(self)
+	self.hopping = false
+	msg.post("#snd_hop", "play_sound")
+	if self.player_row > self.max_row then
+		self.max_row = self.player_row
+		msg.post("#gui", "set_score", { score = self.max_row })
+		while self.gen_row < self.player_row + AHEAD do gen_row(self, self.gen_row + 1) end
+		recycle(self)
+	end
+end
+
+try_hop = function(self, name, dr, dc)
+	if self.state ~= STATE_PLAYING or self.hopping then return end
+	local nr = self.player_row + dr
+	local nc = rround(self.player_x) + dc
+	if nr < 0 or nc < COL_MIN or nc > COL_MAX then return end
+	if not self.rows[nr] then gen_row(self, nr) end
+	go.set_rotation(vmath.quat_rotation_y(YAW[name]), self.player_id)
+	if self.rows[nr].blocked[nc] then return end
+
+	self.hopping = true
+	self.player_row = nr
+	self.player_col = nc
+	self.player_x = nc
+	go.animate(self.player_id, "position.x", go.PLAYBACK_ONCE_FORWARD, nc, go.EASING_INOUTSINE, HOP_T)
+	go.animate(self.player_id, "position.z", go.PLAYBACK_ONCE_FORWARD, -nr * TILE, go.EASING_INOUTSINE, HOP_T)
+	go.animate(self.player_id, "position.y", go.PLAYBACK_ONCE_PINGPONG, PLAYER_Y + HOP_H,
+		go.EASING_OUTQUAD, HOP_T * 0.5, 0, function() on_hop_done(self) end)
+end
+
+-- Engine callbacks -------------------------------------------------------------
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	math.randomseed(os.time())
+	self.rows = {}
+	self.state = STATE_MENU
+	self.selected_char_idx = 1
+	self.preview_char_idx  = 1
+	self.preview_id        = nil
+	self.player_row = 0
+	self.player_col = 0
+	self.player_x = 0
+	self.cam_row = 0
+	self.gen_row = -1
+	for r = -10, -1 do gen_row(self, r) end
+	for r = 0, START_SAFE + AHEAD do gen_row(self, r) end
+	self.player_id = factory.create(CHARACTERS[1].player, vmath.vector3(0, PLAYER_Y, 0),
+		vmath.quat_rotation_y(YAW.up))
+	send_camera(self)
+	msg.post("#gui", "show_menu")
+end
+
+local AUTOPLAY = false
+
+function update(self, dt)
+	if self.state == STATE_CHAR_SELECT then
+		send_preview_camera()
+		return
+	end
+
+	self.cam_row = self.cam_row + (self.player_row - self.cam_row) * math.min(1, dt * 6)
+	send_camera(self)
+
+	if self.state ~= STATE_PLAYING then return end
+
+	if AUTOPLAY then
+		self.autotimer = (self.autotimer or 0) + dt
+		if self.autotimer > 0.3 then
+			self.autotimer = 0
+			if self.state == STATE_DEAD then start_game(self); self.state = STATE_PLAYING
+			else
+				local dirs = { {"up",1,0}, {"up",1,0}, {"left",0,-1}, {"right",0,1} }
+				local d = dirs[math.random(1, #dirs)]
+				try_hop(self, d[1], d[2], d[3])
+			end
+		end
+	end
+
+	if not self.player_id then return end
+
+	for r, row in pairs(self.rows) do
+		if row.type == "road" or row.type == "river" then
+			local z = -r * TILE
+			local hi = row.lo + row.span
+			for _, m in ipairs(row.movers) do
+				m.x = m.x + m.vx * dt
+				if m.x >= hi then m.x = m.x - row.span
+				elseif m.x < row.lo then m.x = m.x + row.span end
+				go.set_position(vmath.vector3(m.x, m.y, z), m.id)
+			end
+		end
+	end
+
+	if not self.hopping then
+		local row = self.rows[self.player_row]
+		if row and row.type == "road" then
+			for _, m in ipairs(row.movers) do
+				if math.abs(m.x - self.player_x) < m.half_len + PLAYER_HALF then
+					die(self, "squish")
+					break
+				end
+			end
+		elseif row and row.type == "river" then
+			local onlog = nil
+			for _, m in ipairs(row.movers) do
+				if math.abs(m.x - self.player_x) <= m.half_len + PLAYER_LOG_HALF then onlog = m; break end
+			end
+			if onlog then
+				self.player_x = self.player_x + onlog.vx * dt
+				if self.player_x < COL_MIN - 0.6 or self.player_x > COL_MAX + 0.6 then
+					die(self, "water")
+				else
+					go.set_position(vmath.vector3(self.player_x, PLAYER_Y, -self.player_row * TILE), self.player_id)
+				end
+			else
+				die(self, "water")
+			end
+		end
+	end
+end
+
+function on_message(self, message_id, message)
+	if message_id == hash("play") then
+		start_game(self)
+		self.state = STATE_PLAYING
+		msg.post("#gui", "hide_menu")
+
+	elseif message_id == hash("open_char_select") then
+		self.state = STATE_CHAR_SELECT
+		self.preview_char_idx = self.selected_char_idx
+		if self.player_id then msg.post(self.player_id, "disable") end
+		spawn_preview(self, self.preview_char_idx)
+		msg.post("#gui", "show_char_select", { char_idx = self.preview_char_idx })
+
+	elseif message_id == hash("char_nav") then
+		local n = #CHARACTERS
+		self.preview_char_idx = (self.preview_char_idx - 1 + message.dir + n) % n + 1
+		spawn_preview(self, self.preview_char_idx)
+		msg.post("#gui", "update_char_name", { char_idx = self.preview_char_idx })
+
+	elseif message_id == hash("char_confirmed") then
+		self.selected_char_idx = self.preview_char_idx
+		destroy_preview(self)
+		if self.player_id then msg.post(self.player_id, "enable") end
+		self.state = STATE_MENU
+		msg.post("#gui", "show_menu")
+
+	elseif message_id == hash("char_back") then
+		destroy_preview(self)
+		if self.player_id then msg.post(self.player_id, "enable") end
+		self.state = STATE_MENU
+		msg.post("#gui", "show_menu")
+
+	elseif message_id == hash("toggle_shadow") then
+		msg.post("@render:", "toggle_shadow_mode")
+
+	elseif message_id == hash("gui_hop") then
+		local d = message.dir
+		local dr = (d == "up") and 1 or (d == "down") and -1 or 0
+		local dc = (d == "right") and 1 or (d == "left") and -1 or 0
+		if self.state == STATE_DEAD then start_game(self); self.state = STATE_PLAYING
+		else try_hop(self, d, dr, dc) end
+	end
+end
+
+function on_input(self, action_id, action)
+	if self.state == STATE_MENU or self.state == STATE_CHAR_SELECT then
+		return
+	elseif self.state == STATE_DEAD then
+		if action.pressed then start_game(self); self.state = STATE_PLAYING end
+		return
+	end
+	if action_id == hash("toggle_shadow") and action.pressed then
+		msg.post("@render:", "toggle_shadow_mode")
+	elseif action_id == hash("up") and action.pressed then try_hop(self, "up", 1, 0)
+	elseif action_id == hash("down") and action.pressed then try_hop(self, "down", -1, 0)
+	elseif action_id == hash("left") and action.pressed then try_hop(self, "left", 0, -1)
+	elseif action_id == hash("right") and action.pressed then try_hop(self, "right", 0, 1)
+	elseif action_id == hash("touch") then
+		if action.pressed then
+			local x, y = action.x, action.y
+			if x >= 350 and y >= 600 then
+				msg.post("@render:", "toggle_shadow_mode")
+				msg.post("#gui", "shadow_toggled", {})
+				return
+			elseif x >= 265 and x <= 375 and y >= 210 and y <= 300 then
+				try_hop(self, "up", 1, 0)
+			elseif x >= 265 and x <= 375 and y >= 30 and y <= 120 then
+				try_hop(self, "down", -1, 0)
+			elseif x >= 125 and x <= 235 and y >= 120 and y <= 210 then
+				try_hop(self, "left", 0, -1)
+			elseif x >= 405 and x <= 515 and y >= 120 and y <= 210 then
+				try_hop(self, "right", 0, 1)
+			end
+		end
+	end
+end

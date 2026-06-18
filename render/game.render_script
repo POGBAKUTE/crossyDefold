@@ -1,0 +1,160 @@
+local UP = vmath.vector3(0, 1, 0)
+local SUN = vmath.normalize(vmath.vector3(0.30, 0.90, -0.25))
+local SHADOW_SIZE = 1024
+
+function init(self)
+	self.model_pred         = render.predicate({ "model" })
+	self.tile_pred          = render.predicate({ "tile" })
+	self.planar_shadow_pred = render.predicate({ "planar_shadow" })
+	self.particle_pred      = render.predicate({ "particle" })
+	self.gui_pred           = render.predicate({ "gui" })
+	self.text_pred          = render.predicate({ "debug_text" })
+
+	self.clear_col = vmath.vector4(0.53, 0.81, 0.94, 1.0)
+	self.eye  = vmath.vector3(0, 8, 15)
+	self.look = vmath.vector3(0, 0, -1.5)
+	self.fov  = math.rad(55)
+
+	self.shadow_map_enabled = false
+
+	self.shadow_rt = render.render_target("shadow_map", {
+		[graphics.BUFFER_TYPE_COLOR0_BIT] = {
+			format     = graphics.TEXTURE_FORMAT_RGBA,
+			width      = SHADOW_SIZE, height = SHADOW_SIZE,
+			min_filter = graphics.TEXTURE_FILTER_LINEAR,
+			mag_filter = graphics.TEXTURE_FILTER_LINEAR,
+			u_wrap     = graphics.TEXTURE_WRAP_CLAMP_TO_EDGE,
+			v_wrap     = graphics.TEXTURE_WRAP_CLAMP_TO_EDGE,
+		},
+		[graphics.BUFFER_TYPE_DEPTH_BIT] = {
+			format = graphics.TEXTURE_FORMAT_DEPTH,
+			width  = SHADOW_SIZE, height = SHADOW_SIZE,
+		}
+	})
+
+	-- Constant buffers (reused every frame, just values change)
+	self.depth_buf    = render.constant_buffer()
+	self.shadow_buf   = render.constant_buffer()
+	self.noshadow_buf = render.constant_buffer()
+	self.noshadow_buf.use_shadow = vmath.vector4(0, 0, 0, 0)
+	self.noshadow_buf.light_vp   = vmath.matrix4()
+end
+
+function update(self)
+	local w = render.get_window_width()
+	local h = render.get_window_height()
+	if w == 0 or h == 0 then return end
+
+	-- Light matrices (follow camera look point so shadow covers visible area)
+	local light_eye  = self.look + SUN * 90
+	local light_view = vmath.matrix4_look_at(light_eye, self.look, UP)
+	local light_proj = vmath.matrix4_orthographic(-12, 12, -22, 12, 0.5, 200)
+	local light_vp   = light_proj * light_view
+
+	-- ---------------------------------------------------------------
+	-- Pass 1: shadow depth  (only when shadow map mode is active)
+	-- ---------------------------------------------------------------
+	if self.shadow_map_enabled then
+		render.set_render_target(self.shadow_rt)
+		render.set_depth_mask(true)
+		render.clear({
+			[graphics.BUFFER_TYPE_COLOR0_BIT] = vmath.vector4(1, 1, 1, 1),
+			[graphics.BUFFER_TYPE_DEPTH_BIT]  = 1,
+		})
+		render.set_viewport(0, 0, SHADOW_SIZE, SHADOW_SIZE)
+		render.set_view(light_view)
+		render.set_projection(light_proj)
+		render.enable_state(graphics.STATE_DEPTH_TEST)
+		render.disable_state(graphics.STATE_BLEND)
+		render.enable_state(graphics.STATE_CULL_FACE)
+
+		-- use_shadow = -1 → fp writes gl_FragCoord.z to R channel
+		self.depth_buf.use_shadow = vmath.vector4(-1, 0, 0, 0)
+		self.depth_buf.light_vp   = light_vp
+		render.draw(self.tile_pred,  {constants = self.depth_buf})
+		render.draw(self.model_pred, {constants = self.depth_buf})
+
+		render.set_render_target(render.RENDER_TARGET_DEFAULT)
+	end
+
+	-- ---------------------------------------------------------------
+	-- Pass 2: main render
+	-- ---------------------------------------------------------------
+	render.set_depth_mask(true)
+	render.set_stencil_mask(0xff)
+	render.clear({
+		[graphics.BUFFER_TYPE_COLOR0_BIT]  = self.clear_col,
+		[graphics.BUFFER_TYPE_DEPTH_BIT]   = 1,
+		[graphics.BUFFER_TYPE_STENCIL_BIT] = 0,
+	})
+	render.set_viewport(0, 0, w, h)
+
+	local view = vmath.matrix4_look_at(self.eye, self.look, UP)
+	local proj = vmath.matrix4_perspective(self.fov, w / h, 0.1, 1000)
+	render.set_view(view)
+	render.set_projection(proj)
+	render.set_blend_func(graphics.BLEND_FACTOR_SRC_ALPHA, graphics.BLEND_FACTOR_ONE_MINUS_SRC_ALPHA)
+	render.enable_state(graphics.STATE_DEPTH_TEST)
+
+	if self.shadow_map_enabled then
+		-- Enable shadow map texture on unit 1
+		render.enable_texture(1, self.shadow_rt, graphics.BUFFER_TYPE_COLOR0_BIT)
+		self.shadow_buf.use_shadow = vmath.vector4(1, 0, 0, 0)
+		self.shadow_buf.light_vp   = light_vp
+
+		-- Tiles (ground receives shadow)
+		render.set_depth_mask(true)
+		render.disable_state(graphics.STATE_BLEND)
+		render.enable_state(graphics.STATE_CULL_FACE)
+		render.draw(self.tile_pred, {constants = self.shadow_buf})
+
+		-- Models (player, cars, trees — receive + cast shadow)
+		render.draw(self.model_pred, {constants = self.shadow_buf})
+
+		render.disable_texture(1)
+	else
+		-- Tiles
+		render.set_depth_mask(true)
+		render.disable_state(graphics.STATE_BLEND)
+		render.enable_state(graphics.STATE_CULL_FACE)
+		render.draw(self.tile_pred, {constants = self.noshadow_buf})
+
+		-- Planar shadows
+		render.set_depth_mask(false)
+		render.enable_state(graphics.STATE_BLEND)
+		render.disable_state(graphics.STATE_CULL_FACE)
+		render.draw(self.planar_shadow_pred)
+
+		-- Models
+		render.set_depth_mask(true)
+		render.disable_state(graphics.STATE_BLEND)
+		render.enable_state(graphics.STATE_CULL_FACE)
+		render.draw(self.model_pred, {constants = self.noshadow_buf})
+	end
+
+	-- Particles
+	render.set_depth_mask(false)
+	render.disable_state(graphics.STATE_CULL_FACE)
+	render.enable_state(graphics.STATE_BLEND)
+	render.draw(self.particle_pred)
+	render.disable_state(graphics.STATE_DEPTH_TEST)
+
+	-- GUI
+	render.set_view(vmath.matrix4())
+	render.set_projection(vmath.matrix4_orthographic(0, w, 0, h, -1, 1))
+	render.enable_state(graphics.STATE_STENCIL_TEST)
+	render.draw(self.gui_pred)
+	render.draw(self.text_pred)
+	render.disable_state(graphics.STATE_STENCIL_TEST)
+	render.disable_state(graphics.STATE_BLEND)
+end
+
+function on_message(self, message_id, message)
+	if message_id == hash("set_cam") then
+		self.eye  = message.eye
+		self.look = message.look
+		self.fov  = message.fov
+	elseif message_id == hash("toggle_shadow_mode") then
+		self.shadow_map_enabled = not self.shadow_map_enabled
+	end
+end
