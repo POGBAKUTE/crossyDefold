@@ -1,0 +1,13 @@
+function init(self)
+	msg.post(".", "acquire_input_focus")
+end
+
+local scene_mgr = require "main.scene_mgr"
+
+function on_message(self, message_id, message)
+	if message_id == hash("play") then
+		scene_mgr.load_scene("gameplay")
+	elseif message_id == hash("open_char_select") then
+		scene_mgr.load_scene("char_select")
+	end
+end

@@ -1,12 +1,6 @@
-/.editor_settings
-/.internal
-/build
-.externalToolBuilders
-.DS_Store
-Thumbs.db
-.lock-wscript
+build/
+crossy_bundle/
+crossy_latest/
+crossy_latest2/
 *.pyc
-.project
-.cproject
-builtins
-/bundle
+.DS_Store

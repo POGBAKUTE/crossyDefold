@@ -1,0 +1,70 @@
+local scene_mgr = require "main.scene_mgr"
+
+local CHARACTERS = {
+	{ preview = "#f_preview_chicken",  name = "Chicken"  },
+	{ preview = "#f_preview_avocoder", name = "Avocoder" },
+	{ preview = "#f_preview_bacon",    name = "Bacon"    },
+}
+
+local PREV_EYE   = vmath.vector3(1.5, 2.5, 4.5)
+local PREV_LOOK  = vmath.vector3(0, 0.4, 0)
+local PREV_FOV   = math.rad(42)
+local PLAYER_Y   = 0.0
+
+local function send_preview_camera()
+	msg.post("@render:", "set_cam", { eye = PREV_EYE, look = PREV_LOOK, fov = PREV_FOV })
+end
+
+local function spawn_preview(self, char_idx)
+	if self.preview_id then
+		go.cancel_animations(self.preview_id)
+		go.delete(self.preview_id)
+		self.preview_id = nil
+	end
+	local ch = CHARACTERS[char_idx]
+	self.preview_id = factory.create(ch.preview, vmath.vector3(0, PLAYER_Y, 0),
+		vmath.quat_rotation_y(math.rad(180)))
+	go.animate(self.preview_id, "euler.y", go.PLAYBACK_LOOP_FORWARD, 360, go.EASING_LINEAR, 3.5)
+end
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	msg.post("@render:", "set_clear_color", { color = vmath.vector4(0, 0, 0, 1) })
+	self.selected_idx = 1
+	self.preview_idx  = 1
+	self.preview_id   = nil
+	spawn_preview(self, 1)
+end
+
+function update(self, dt)
+	send_preview_camera()
+end
+
+function on_message(self, message_id, message)
+	if message_id == hash("set_char_idx") then
+		self.selected_idx = message.char_idx
+		self.preview_idx  = message.char_idx
+		msg.post("#gui", "update_char_name", { char_idx = self.preview_idx })
+	elseif message_id == hash("char_nav") then
+		local n = #CHARACTERS
+		self.preview_idx = (self.preview_idx - 1 + message.dir + n) % n + 1
+		spawn_preview(self, self.preview_idx)
+		msg.post("#gui", "update_char_name", { char_idx = self.preview_idx })
+	elseif message_id == hash("char_confirmed") then
+		self.selected_idx = self.preview_idx
+		if self.preview_id then
+			go.cancel_animations(self.preview_id)
+			go.delete(self.preview_id)
+			self.preview_id = nil
+		end
+		scene_mgr.set_char_idx(self.selected_idx)
+		scene_mgr.load_scene("gameplay")
+	elseif message_id == hash("char_back") then
+		if self.preview_id then
+			go.cancel_animations(self.preview_id)
+			go.delete(self.preview_id)
+			self.preview_id = nil
+		end
+		scene_mgr.load_scene("menu")
+	end
+end

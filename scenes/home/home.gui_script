@@ -1,0 +1,38 @@
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	self.btn_play   = gui.get_node("btn_play")
+	self.bg         = gui.get_node("bg")
+	self.lbl_play   = gui.get_node("lbl_play")
+	self.lbl_version = gui.get_node("lbl_version")
+	self.played     = false
+end
+
+local function hide_home(self)
+	gui.set_enabled(self.bg, false)
+	gui.set_enabled(self.btn_play, false)
+	gui.set_enabled(self.lbl_play, false)
+	gui.set_enabled(self.lbl_version, false)
+end
+
+function on_input(self, action_id, action)
+	if action_id == hash("touch") and action.pressed and not self.played then
+		self.played = true
+		hide_home(self)
+		msg.post("main:/scene_mgr#script", "load_game")
+		return true
+	end
+end
+
+function on_message(self, message_id, message)
+	if message_id == hash("hit_test") and not self.played then
+		self.played = true
+		hide_home(self)
+		msg.post("main:/scene_mgr#script", "load_game")
+	elseif message_id == hash("show_home") then
+		self.played = false
+		gui.set_enabled(self.bg, true)
+		gui.set_enabled(self.btn_play, true)
+		gui.set_enabled(self.lbl_play, true)
+		gui.set_enabled(self.lbl_version, true)
+	end
+end

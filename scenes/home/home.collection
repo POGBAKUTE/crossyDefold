@@ -1,11 +1,5 @@
-name: "main"
+name: "home"
 scale_along_z: 0
-instances {
-  id: "scene_mgr"
-  prototype: "/main/scene_mgr.go"
-  position { x: 0.0 y: 0.0 z: 0.0 }
-  rotation { x: 0.0 y: 0.0 z: 0.0 w: 1.0 }
-}
 instances {
   id: "home"
   prototype: "/scenes/home/home.go"
