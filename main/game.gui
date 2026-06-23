@@ -4,7 +4,7 @@ fonts {
   font: "/builtins/fonts/default.font"
 }
 nodes {
-  position { x: 360.0 y: 1100.0 z: 0.0 w: 1.0 }
+  position { x: 360.0 y: 1215.0 z: 0.0 w: 1.0 }
   size { x: 180.0 y: 65.0 z: 0.0 w: 0.0 }
   color { x: 0.0 y: 0.0 z: 0.0 w: 0.45 }
   type: TYPE_BOX
@@ -13,7 +13,7 @@ nodes {
   inherit_alpha: true
 }
 nodes {
-  position { x: 360.0 y: 1100.0 z: 0.1 w: 1.0 }
+  position { x: 360.0 y: 1215.0 z: 0.1 w: 1.0 }
   scale { x: 4.5 y: 4.5 z: 1.0 w: 0.0 }
   size { x: 200.0 y: 40.0 z: 0.0 w: 0.0 }
   color { x: 1.0 y: 1.0 z: 1.0 w: 1.0 }
@@ -103,7 +103,7 @@ nodes {
   inherit_alpha: true
 }
 nodes {
-  position { x: 590.0 y: 1090.0 z: 0.1 w: 1.0 }
+  position { x: 600.0 y: 1215.0 z: 0.1 w: 1.0 }
   size { x: 195.0 y: 52.0 z: 0.0 w: 0.0 }
   color { x: 0.08 y: 0.08 z: 0.08 w: 0.7 }
   type: TYPE_BOX
@@ -112,7 +112,7 @@ nodes {
   inherit_alpha: true
 }
 nodes {
-  position { x: 590.0 y: 1090.0 z: 0.2 w: 1.0 }
+  position { x: 600.0 y: 1215.0 z: 0.2 w: 1.0 }
   scale { x: 1.6 y: 1.6 z: 1.0 w: 0.0 }
   size { x: 195.0 y: 52.0 z: 0.0 w: 0.0 }
   color { x: 0.4 y: 1.0 z: 0.5 w: 1.0 }
@@ -435,7 +435,7 @@ nodes {
   inherit_alpha: true
 }
 nodes {
-  position { x: 85.0 y: 1090.0 z: 0.1 w: 1.0 }
+  position { x: 85.0 y: 1215.0 z: 0.1 w: 1.0 }
   size { x: 150.0 y: 52.0 z: 0.0 w: 0.0 }
   color { x: 0.15 y: 0.15 z: 0.15 w: 0.75 }
   type: TYPE_BOX
@@ -444,7 +444,7 @@ nodes {
   inherit_alpha: true
 }
 nodes {
-  position { x: 85.0 y: 1090.0 z: 0.2 w: 1.0 }
+  position { x: 85.0 y: 1215.0 z: 0.2 w: 1.0 }
   scale { x: 1.8 y: 1.8 z: 1.0 w: 0.0 }
   size { x: 150.0 y: 52.0 z: 0.0 w: 0.0 }
   color { x: 1.0 y: 1.0 z: 1.0 w: 0.9 }
