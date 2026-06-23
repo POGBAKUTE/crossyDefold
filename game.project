@@ -1,6 +1,7 @@
 [project]
 title = crossyDefold
 app_manifest = /game.appmanifest
+dependencies#0 = https://github.com/britzl/monarch/archive/refs/tags/5.2.0.zip
 
 [bootstrap]
 main_collection = /main/main.collectionc
@@ -53,6 +54,6 @@ scale = 0.01
 velocity_threshold = 100.0
 
 [html5]
-scale_mode = stretch
+scale_mode = fit
 show_made_with_defold = 0
 

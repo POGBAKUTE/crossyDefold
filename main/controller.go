@@ -1,6 +1,6 @@
 components {
   id: "script"
-  component: "/main/main.script"
+  component: "/main/gameplay_controller.script"
 }
 components {
   id: "gui"

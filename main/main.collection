@@ -1,14 +1,14 @@
 name: "main"
 scale_along_z: 0
 instances {
-  id: "scene_mgr"
-  prototype: "/main/scene_mgr.go"
-  position { x: 0.0 y: 0.0 z: 0.0 }
-  rotation { x: 0.0 y: 0.0 z: 0.0 w: 1.0 }
+  id: "bootstrap"
+  prototype: "/main/bootstrap.go"
 }
 instances {
-  id: "home"
-  prototype: "/scenes/home/home.go"
-  position { x: 0.0 y: 0.0 z: 0.0 }
-  rotation { x: 0.0 y: 0.0 z: 0.0 w: 1.0 }
+  id: "home_screen"
+  prototype: "/main/home_screen.go"
+}
+instances {
+  id: "game_screen"
+  prototype: "/main/game_screen.go"
 }

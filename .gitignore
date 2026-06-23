@@ -4,3 +4,8 @@ crossy_latest/
 crossy_latest2/
 *.pyc
 .DS_Store
+bundle/
+.deps/
+.internal/
+.editor_settings
+com/
