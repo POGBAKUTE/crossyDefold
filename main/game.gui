@@ -4,9 +4,18 @@ fonts {
   font: "/builtins/fonts/default.font"
 }
 nodes {
-  position { x: 320.0 y: 1080.0 z: 0.0 w: 1.0 }
-  scale { x: 3.0 y: 3.0 z: 1.0 w: 0.0 }
-  size { x: 300.0 y: 50.0 z: 0.0 w: 0.0 }
+  position { x: 360.0 y: 1100.0 z: 0.0 w: 1.0 }
+  size { x: 180.0 y: 65.0 z: 0.0 w: 0.0 }
+  color { x: 0.0 y: 0.0 z: 0.0 w: 0.45 }
+  type: TYPE_BOX
+  id: "score_bg"
+  pivot: PIVOT_CENTER
+  inherit_alpha: true
+}
+nodes {
+  position { x: 360.0 y: 1100.0 z: 0.1 w: 1.0 }
+  scale { x: 4.5 y: 4.5 z: 1.0 w: 0.0 }
+  size { x: 200.0 y: 40.0 z: 0.0 w: 0.0 }
   color { x: 1.0 y: 1.0 z: 1.0 w: 1.0 }
   type: TYPE_TEXT
   text: "0"
@@ -94,21 +103,21 @@ nodes {
   inherit_alpha: true
 }
 nodes {
-  position { x: 515.0 y: 1068.0 z: 0.1 w: 1.0 }
-  size { x: 200.0 y: 52.0 z: 0.0 w: 0.0 }
-  color { x: 0.08 y: 0.08 z: 0.08 w: 0.75 }
+  position { x: 590.0 y: 1090.0 z: 0.1 w: 1.0 }
+  size { x: 195.0 y: 52.0 z: 0.0 w: 0.0 }
+  color { x: 0.08 y: 0.08 z: 0.08 w: 0.7 }
   type: TYPE_BOX
   id: "btn_shadow_toggle"
   pivot: PIVOT_CENTER
   inherit_alpha: true
 }
 nodes {
-  position { x: 515.0 y: 1068.0 z: 0.2 w: 1.0 }
-  scale { x: 1.5 y: 1.5 z: 1.0 w: 0.0 }
-  size { x: 200.0 y: 52.0 z: 0.0 w: 0.0 }
+  position { x: 590.0 y: 1090.0 z: 0.2 w: 1.0 }
+  scale { x: 1.6 y: 1.6 z: 1.0 w: 0.0 }
+  size { x: 195.0 y: 52.0 z: 0.0 w: 0.0 }
   color { x: 0.4 y: 1.0 z: 0.5 w: 1.0 }
   type: TYPE_TEXT
-  text: "[Planar]"
+  text: "Planar"
   font: "default"
   id: "lbl_shadow"
   pivot: PIVOT_CENTER
@@ -131,17 +140,17 @@ nodes {
   inherit_alpha: true
 }
 nodes {
-  position { x: 320.0 y: 255.0 z: 0.1 w: 1.0 }
-  size { x: 110.0 y: 90.0 z: 0.0 w: 0.0 }
-  color { x: 0.1 y: 0.1 z: 0.1 w: 0.55 }
+  position { x: 360.0 y: 285.0 z: 0.1 w: 1.0 }
+  size { x: 125.0 y: 105.0 z: 0.0 w: 0.0 }
+  color { x: 0.1 y: 0.1 z: 0.1 w: 0.6 }
   type: TYPE_BOX
   id: "btn_up"
   pivot: PIVOT_CENTER
   inherit_alpha: true
 }
 nodes {
-  position { x: 320.0 y: 255.0 z: 0.2 w: 1.0 }
-  scale { x: 2.5 y: 2.5 z: 1.0 w: 0.0 }
+  position { x: 360.0 y: 285.0 z: 0.2 w: 1.0 }
+  scale { x: 3.0 y: 3.0 z: 1.0 w: 0.0 }
   size { x: 40.0 y: 40.0 z: 0.0 w: 0.0 }
   color { x: 1.0 y: 1.0 z: 1.0 w: 1.0 }
   type: TYPE_TEXT
@@ -152,17 +161,17 @@ nodes {
   inherit_alpha: true
 }
 nodes {
-  position { x: 320.0 y: 75.0 z: 0.1 w: 1.0 }
-  size { x: 110.0 y: 90.0 z: 0.0 w: 0.0 }
-  color { x: 0.1 y: 0.1 z: 0.1 w: 0.55 }
+  position { x: 360.0 y: 75.0 z: 0.1 w: 1.0 }
+  size { x: 125.0 y: 105.0 z: 0.0 w: 0.0 }
+  color { x: 0.1 y: 0.1 z: 0.1 w: 0.6 }
   type: TYPE_BOX
   id: "btn_down"
   pivot: PIVOT_CENTER
   inherit_alpha: true
 }
 nodes {
-  position { x: 320.0 y: 75.0 z: 0.2 w: 1.0 }
-  scale { x: 2.5 y: 2.5 z: 1.0 w: 0.0 }
+  position { x: 360.0 y: 75.0 z: 0.2 w: 1.0 }
+  scale { x: 3.0 y: 3.0 z: 1.0 w: 0.0 }
   size { x: 40.0 y: 40.0 z: 0.0 w: 0.0 }
   color { x: 1.0 y: 1.0 z: 1.0 w: 1.0 }
   type: TYPE_TEXT
@@ -173,17 +182,17 @@ nodes {
   inherit_alpha: true
 }
 nodes {
-  position { x: 180.0 y: 165.0 z: 0.1 w: 1.0 }
-  size { x: 110.0 y: 90.0 z: 0.0 w: 0.0 }
-  color { x: 0.1 y: 0.1 z: 0.1 w: 0.55 }
+  position { x: 220.0 y: 180.0 z: 0.1 w: 1.0 }
+  size { x: 125.0 y: 105.0 z: 0.0 w: 0.0 }
+  color { x: 0.1 y: 0.1 z: 0.1 w: 0.6 }
   type: TYPE_BOX
   id: "btn_left"
   pivot: PIVOT_CENTER
   inherit_alpha: true
 }
 nodes {
-  position { x: 180.0 y: 165.0 z: 0.2 w: 1.0 }
-  scale { x: 2.5 y: 2.5 z: 1.0 w: 0.0 }
+  position { x: 220.0 y: 180.0 z: 0.2 w: 1.0 }
+  scale { x: 3.0 y: 3.0 z: 1.0 w: 0.0 }
   size { x: 40.0 y: 40.0 z: 0.0 w: 0.0 }
   color { x: 1.0 y: 1.0 z: 1.0 w: 1.0 }
   type: TYPE_TEXT
@@ -194,17 +203,17 @@ nodes {
   inherit_alpha: true
 }
 nodes {
-  position { x: 460.0 y: 165.0 z: 0.1 w: 1.0 }
-  size { x: 110.0 y: 90.0 z: 0.0 w: 0.0 }
-  color { x: 0.1 y: 0.1 z: 0.1 w: 0.55 }
+  position { x: 500.0 y: 180.0 z: 0.1 w: 1.0 }
+  size { x: 125.0 y: 105.0 z: 0.0 w: 0.0 }
+  color { x: 0.1 y: 0.1 z: 0.1 w: 0.6 }
   type: TYPE_BOX
   id: "btn_right"
   pivot: PIVOT_CENTER
   inherit_alpha: true
 }
 nodes {
-  position { x: 460.0 y: 165.0 z: 0.2 w: 1.0 }
-  scale { x: 2.5 y: 2.5 z: 1.0 w: 0.0 }
+  position { x: 500.0 y: 180.0 z: 0.2 w: 1.0 }
+  scale { x: 3.0 y: 3.0 z: 1.0 w: 0.0 }
   size { x: 40.0 y: 40.0 z: 0.0 w: 0.0 }
   color { x: 1.0 y: 1.0 z: 1.0 w: 1.0 }
   type: TYPE_TEXT
@@ -426,20 +435,21 @@ nodes {
   inherit_alpha: true
 }
 nodes {
-  position { x: 90.0 y: 1068.0 z: 0.1 w: 1.0 }
-  size { x: 140.0 y: 52.0 z: 0.0 w: 0.0 }
-  color { x: 0.15 y: 0.15 z: 0.15 w: 0.85 }
+  position { x: 85.0 y: 1090.0 z: 0.1 w: 1.0 }
+  size { x: 150.0 y: 52.0 z: 0.0 w: 0.0 }
+  color { x: 0.15 y: 0.15 z: 0.15 w: 0.75 }
   type: TYPE_BOX
   id: "btn_home"
   pivot: PIVOT_CENTER
   inherit_alpha: true
 }
 nodes {
-  position { x: 90.0 y: 1068.0 z: 0.2 w: 1.0 }
-  size { x: 200.0 y: 52.0 z: 0.0 w: 0.0 }
-  color { x: 1.0 y: 1.0 z: 1.0 w: 1.0 }
+  position { x: 85.0 y: 1090.0 z: 0.2 w: 1.0 }
+  scale { x: 1.8 y: 1.8 z: 1.0 w: 0.0 }
+  size { x: 150.0 y: 52.0 z: 0.0 w: 0.0 }
+  color { x: 1.0 y: 1.0 z: 1.0 w: 0.9 }
   type: TYPE_TEXT
-  text: "[Home]"
+  text: "Home"
   font: "default"
   id: "lbl_home"
   pivot: PIVOT_CENTER
