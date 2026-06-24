@@ -14,8 +14,8 @@ void main()
 {
     vec4 world_pos = mtx_world * vec4(position.xyz, 1.0);
 
-    // Sun direction in world space (toward sun), matched to model_lit.fp view-space light
-    const vec3 L = normalize(vec3(0.30, 0.90, -0.25));
+    // Near-overhead sun so shadow stays compact directly under the character
+    const vec3 L = normalize(vec3(0.12, 0.99, -0.06));
 
     // Project vertex onto y = 0.01 plane along inverse light direction
     float t = max(0.0, world_pos.y - 0.01) / L.y;

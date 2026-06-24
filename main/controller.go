@@ -127,16 +127,8 @@ components {
   component: "/objects/player_fox.factory"
 }
 components {
-  id: "f_player_goose"
-  component: "/objects/player_goose.factory"
-}
-components {
   id: "f_preview_fox"
   component: "/objects/preview_fox.factory"
-}
-components {
-  id: "f_preview_goose"
-  component: "/objects/preview_goose.factory"
 }
 components {
   id: "f_player_erwin"

@@ -70,7 +70,6 @@ local CHARACTERS = {
 	{ player = "#f_player_avocoder", preview = "#f_preview_avocoder", name = "Avocoder", scale = 0.35, preview_scale = 0.5  },
 	{ player = "#f_player_bacon",    preview = "#f_preview_bacon",    name = "Bacon",    scale = 0.4,  preview_scale = 0.35 },
 	{ player = "#f_player_fox",      preview = "#f_preview_fox",      name = "Fox",      scale = 0.15, preview_scale = 0.12 },
-	{ player = "#f_player_goose",    preview = "#f_preview_goose",    name = "Goose",    scale = 0.09, preview_scale = 0.16, y_offset = 0.2 },
 	{ player = "#f_player_erwin",    preview = "#f_preview_erwin",    name = "Erwin",    scale = 0.5,  preview_scale = 0.3, y_offset = 0.5 },
 }
 

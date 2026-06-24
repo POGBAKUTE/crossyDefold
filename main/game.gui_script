@@ -1,6 +1,6 @@
 local VERSION = "v0.2.8"
 
-local CHAR_NAMES = { "Chicken", "Avocoder", "Bacon", "Fox", "Goose", "Erwin" }
+local CHAR_NAMES = { "Chicken", "Avocoder", "Bacon", "Fox", "Erwin" }
 
 local DOT_ACTIVE   = vmath.vector4(1.0, 1.0, 1.0, 1.0)
 local DOT_INACTIVE = vmath.vector4(0.3, 0.3, 0.45, 0.85)
