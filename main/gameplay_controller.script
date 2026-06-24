@@ -2,6 +2,17 @@
 local monarch = require("monarch.monarch")
 local SIZES = require("main.model_sizes").sizes
 
+local SAVE_PATH = sys.get_save_file("crossydefold", "save")
+
+local function load_best()
+	local data = sys.load(SAVE_PATH)
+	return data.best or 0
+end
+
+local function save_best(score)
+	sys.save(SAVE_PATH, { best = score })
+end
+
 -- World / grid -----------------------------------------------------------------
 local TILE     = 1.0
 local COL_MIN  = -3
@@ -256,7 +267,12 @@ die = function(self, cause)
 		msg.post("#snd_die", "play_sound")
 		go.animate(self.player_id, "scale.y", go.PLAYBACK_ONCE_FORWARD, 0.12, go.EASING_OUTQUAD, 0.12)
 	end
-	msg.post("#gui", "game_over", { score = self.max_row })
+	local best = load_best()
+	if self.max_row > best then
+		best = self.max_row
+		save_best(best)
+	end
+	msg.post("#gui", "game_over", { score = self.max_row, best = best })
 end
 
 on_hop_done = function(self)
