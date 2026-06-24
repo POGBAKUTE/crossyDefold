@@ -392,8 +392,8 @@ nodes {
   inherit_alpha: true
 }
 nodes {
-  position { x: 310.0 y: 332.0 z: 0.1 w: 1.0 }
-  size { x: 22.0 y: 22.0 z: 0.0 w: 0.0 }
+  position { x: 285.0 y: 332.0 z: 0.1 w: 1.0 }
+  size { x: 18.0 y: 18.0 z: 0.0 w: 0.0 }
   color { x: 1.0 y: 1.0 z: 1.0 w: 1.0 }
   type: TYPE_BOX
   id: "char_dot_1"
@@ -401,8 +401,8 @@ nodes {
   inherit_alpha: true
 }
 nodes {
-  position { x: 360.0 y: 332.0 z: 0.1 w: 1.0 }
-  size { x: 22.0 y: 22.0 z: 0.0 w: 0.0 }
+  position { x: 315.0 y: 332.0 z: 0.1 w: 1.0 }
+  size { x: 18.0 y: 18.0 z: 0.0 w: 0.0 }
   color { x: 0.3 y: 0.3 z: 0.45 w: 0.85 }
   type: TYPE_BOX
   id: "char_dot_2"
@@ -410,11 +410,38 @@ nodes {
   inherit_alpha: true
 }
 nodes {
-  position { x: 410.0 y: 332.0 z: 0.1 w: 1.0 }
-  size { x: 22.0 y: 22.0 z: 0.0 w: 0.0 }
+  position { x: 345.0 y: 332.0 z: 0.1 w: 1.0 }
+  size { x: 18.0 y: 18.0 z: 0.0 w: 0.0 }
   color { x: 0.3 y: 0.3 z: 0.45 w: 0.85 }
   type: TYPE_BOX
   id: "char_dot_3"
+  pivot: PIVOT_CENTER
+  inherit_alpha: true
+}
+nodes {
+  position { x: 375.0 y: 332.0 z: 0.1 w: 1.0 }
+  size { x: 18.0 y: 18.0 z: 0.0 w: 0.0 }
+  color { x: 0.3 y: 0.3 z: 0.45 w: 0.85 }
+  type: TYPE_BOX
+  id: "char_dot_4"
+  pivot: PIVOT_CENTER
+  inherit_alpha: true
+}
+nodes {
+  position { x: 405.0 y: 332.0 z: 0.1 w: 1.0 }
+  size { x: 18.0 y: 18.0 z: 0.0 w: 0.0 }
+  color { x: 0.3 y: 0.3 z: 0.45 w: 0.85 }
+  type: TYPE_BOX
+  id: "char_dot_5"
+  pivot: PIVOT_CENTER
+  inherit_alpha: true
+}
+nodes {
+  position { x: 435.0 y: 332.0 z: 0.1 w: 1.0 }
+  size { x: 18.0 y: 18.0 z: 0.0 w: 0.0 }
+  color { x: 0.3 y: 0.3 z: 0.45 w: 0.85 }
+  type: TYPE_BOX
+  id: "char_dot_6"
   pivot: PIVOT_CENTER
   inherit_alpha: true
 }

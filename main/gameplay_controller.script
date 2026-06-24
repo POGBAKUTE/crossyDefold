@@ -69,6 +69,9 @@ local CHARACTERS = {
 	{ player = "#f_player",          preview = "#f_preview_chicken",  name = "Chicken",  scale = 1.0,  preview_scale = 1.0  },
 	{ player = "#f_player_avocoder", preview = "#f_preview_avocoder", name = "Avocoder", scale = 0.35, preview_scale = 0.5  },
 	{ player = "#f_player_bacon",    preview = "#f_preview_bacon",    name = "Bacon",    scale = 0.4,  preview_scale = 0.35 },
+	{ player = "#f_player_fox",      preview = "#f_preview_fox",      name = "Fox",      scale = 0.15, preview_scale = 0.12 },
+	{ player = "#f_player_goose",    preview = "#f_preview_goose",    name = "Goose",    scale = 0.09, preview_scale = 0.16, y_offset = 0.2 },
+	{ player = "#f_player_erwin",    preview = "#f_preview_erwin",    name = "Erwin",    scale = 0.5,  preview_scale = 0.3, y_offset = 0.5 },
 }
 
 -- forward declarations
@@ -100,7 +103,7 @@ spawn_preview = function(self, char_idx)
 	destroy_preview(self)
 	local ch = CHARACTERS[char_idx]
 	print("spawn_preview: char_idx=" .. tostring(char_idx) .. " factory=" .. tostring(ch and ch.preview))
-	self.preview_id = factory.create(ch.preview, vmath.vector3(0, PLAYER_Y, 0),
+	self.preview_id = factory.create(ch.preview, vmath.vector3(0, PLAYER_Y + (ch.y_offset or 0), 0),
 		vmath.quat_rotation_y(math.rad(0)))
 	if ch.preview_scale and ch.preview_scale ~= 1.0 then
 		go.set_scale(ch.preview_scale, self.preview_id)
@@ -246,8 +249,9 @@ start_game = function(self)
 	for r = -10, -1 do gen_row(self, r) end
 	for r = 0, START_SAFE + AHEAD do gen_row(self, r) end
 	local ch = CHARACTERS[self.selected_char_idx]
+	self.player_y_offset = ch.y_offset or 0
 	print("start_game: selected_char_idx=" .. tostring(self.selected_char_idx) .. " ch=" .. tostring(ch))
-	self.player_id = factory.create(ch.player, vmath.vector3(0, PLAYER_Y, 0),
+	self.player_id = factory.create(ch.player, vmath.vector3(0, PLAYER_Y + self.player_y_offset, 0),
 		vmath.quat_rotation_y(YAW.up))
 	if ch.scale and ch.scale ~= 1.0 then
 		go.set_scale(ch.scale, self.player_id)
@@ -301,7 +305,7 @@ try_hop = function(self, name, dr, dc)
 	self.player_x = nc
 	go.animate(self.player_id, "position.x", go.PLAYBACK_ONCE_FORWARD, nc, go.EASING_INOUTSINE, HOP_T)
 	go.animate(self.player_id, "position.z", go.PLAYBACK_ONCE_FORWARD, -nr * TILE, go.EASING_INOUTSINE, HOP_T)
-	go.animate(self.player_id, "position.y", go.PLAYBACK_ONCE_PINGPONG, PLAYER_Y + HOP_H,
+	go.animate(self.player_id, "position.y", go.PLAYBACK_ONCE_PINGPONG, PLAYER_Y + self.player_y_offset + HOP_H,
 		go.EASING_OUTQUAD, HOP_T * 0.5, 0, function() on_hop_done(self) end)
 end
 
@@ -382,7 +386,7 @@ function update(self, dt)
 				if self.player_x < COL_MIN - 0.6 or self.player_x > COL_MAX + 0.6 then
 					die(self, "water")
 				else
-					go.set_position(vmath.vector3(self.player_x, PLAYER_Y, -self.player_row * TILE), self.player_id)
+					go.set_position(vmath.vector3(self.player_x, PLAYER_Y + self.player_y_offset, -self.player_row * TILE), self.player_id)
 				end
 			else
 				die(self, "water")

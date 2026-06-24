@@ -1,15 +1,16 @@
 local VERSION = "v0.2.8"
 
-local CHAR_NAMES = { "Chicken", "Avocoder", "Bacon" }
+local CHAR_NAMES = { "Chicken", "Avocoder", "Bacon", "Fox", "Goose", "Erwin" }
 
 local DOT_ACTIVE   = vmath.vector4(1.0, 1.0, 1.0, 1.0)
 local DOT_INACTIVE = vmath.vector4(0.3, 0.3, 0.45, 0.85)
 
 local function update_dots(self, char_idx)
-	gui.set_color(self.char_dot_1, char_idx == 1 and DOT_ACTIVE or DOT_INACTIVE)
-	gui.set_color(self.char_dot_2, char_idx == 2 and DOT_ACTIVE or DOT_INACTIVE)
-	gui.set_color(self.char_dot_3, char_idx == 3 and DOT_ACTIVE or DOT_INACTIVE)
+	for i, node in ipairs(self.char_dots) do
+		gui.set_color(node, char_idx == i and DOT_ACTIVE or DOT_INACTIVE)
+	end
 end
+
 
 local function show_home(self)
 	gui.set_enabled(self.title,          true)
@@ -37,9 +38,7 @@ local function show_home(self)
 	gui.set_enabled(self.lbl_char_title,   false)
 	gui.set_enabled(self.char_name_bg,     false)
 	gui.set_enabled(self.lbl_char_name,    false)
-	gui.set_enabled(self.char_dot_1,       false)
-	gui.set_enabled(self.char_dot_2,       false)
-	gui.set_enabled(self.char_dot_3,       false)
+	for _, node in ipairs(self.char_dots) do gui.set_enabled(node, false) end
 	gui.set_enabled(self.btn_char_prev,    false)
 	gui.set_enabled(self.lbl_char_prev,    false)
 	gui.set_enabled(self.btn_char_next,    false)
@@ -55,9 +54,7 @@ local function show_char_select(self, char_idx)
 	gui.set_enabled(self.lbl_char_title,   true)
 	gui.set_enabled(self.char_name_bg,     true)
 	gui.set_enabled(self.lbl_char_name,    true)
-	gui.set_enabled(self.char_dot_1,       true)
-	gui.set_enabled(self.char_dot_2,       true)
-	gui.set_enabled(self.char_dot_3,       true)
+	for _, node in ipairs(self.char_dots) do gui.set_enabled(node, true) end
 	gui.set_enabled(self.btn_char_prev,    true)
 	gui.set_enabled(self.lbl_char_prev,    true)
 	gui.set_enabled(self.btn_char_next,    true)
@@ -116,9 +113,7 @@ local function show_gameplay(self)
 	gui.set_enabled(self.lbl_char_title,   false)
 	gui.set_enabled(self.char_name_bg,     false)
 	gui.set_enabled(self.lbl_char_name,    false)
-	gui.set_enabled(self.char_dot_1,       false)
-	gui.set_enabled(self.char_dot_2,       false)
-	gui.set_enabled(self.char_dot_3,       false)
+	for _, node in ipairs(self.char_dots) do gui.set_enabled(node, false) end
 	gui.set_enabled(self.btn_char_prev,    false)
 	gui.set_enabled(self.lbl_char_prev,    false)
 	gui.set_enabled(self.btn_char_next,    false)
@@ -163,9 +158,10 @@ function init(self)
 	self.lbl_char_title  = gui.get_node("lbl_char_title")
 	self.char_name_bg    = gui.get_node("char_name_bg")
 	self.lbl_char_name   = gui.get_node("lbl_char_name")
-	self.char_dot_1      = gui.get_node("char_dot_1")
-	self.char_dot_2      = gui.get_node("char_dot_2")
-	self.char_dot_3      = gui.get_node("char_dot_3")
+	self.char_dots = {}
+	for i = 1, #CHAR_NAMES do
+		self.char_dots[i] = gui.get_node("char_dot_" .. i)
+	end
 	self.btn_char_prev   = gui.get_node("btn_char_prev")
 	self.lbl_char_prev   = gui.get_node("lbl_char_prev")
 	self.btn_char_next   = gui.get_node("btn_char_next")

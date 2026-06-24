@@ -1,0 +1,11 @@
+Model Information:
+* title:	Erwin - Low Poly
+* source:	https://sketchfab.com/3d-models/erwin-low-poly-f228f0b05bd8482e8670ac925eaeb228
+* author:	Amanda Alavi (https://sketchfab.com/Amanda.Alavi)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Erwin - Low Poly" (https://sketchfab.com/3d-models/erwin-low-poly-f228f0b05bd8482e8670ac925eaeb228) by Amanda Alavi (https://sketchfab.com/Amanda.Alavi) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)

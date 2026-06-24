@@ -1,0 +1,4 @@
+mesh: "/assets/characters/erwin/erwin_converted.gltf"
+material: "/render/model_lit.material"
+textures: "/assets/characters/erwin/erwin_diffuse.png"
+name: "char_erwin"

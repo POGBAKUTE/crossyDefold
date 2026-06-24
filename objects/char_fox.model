@@ -1,0 +1,4 @@
+mesh: "/assets/characters/fox/fox_split.gltf"
+material: "/render/model_lit.material"
+textures: "/assets/characters/fox/baseColor_1.png"
+name: "char_fox"

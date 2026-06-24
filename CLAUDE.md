@@ -46,6 +46,8 @@ When you need to perform specific tasks, load the corresponding skill file first
 | Set up Monarch screens/popups | `.claude/skills/monarch-screen-setup/SKILL.md` |
 | Use xmath for zero-allocation math | `.claude/skills/xmath-usage/SKILL.md` |
 | Update/maintain skill files | `.claude/skills/defold-skill-maintain/SKILL.md` |
+| Handle multiple screen sizes / responsive layout | `.claude/skills/defold-responsive-screen/SKILL.md` |
+| Planar shadow setup and multi-mesh overdraw fix | `.claude/skills/defold-shadow/SKILL.md` |
 
 ## Defold file formats
 

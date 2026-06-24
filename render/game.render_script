@@ -119,11 +119,15 @@ function update(self)
 		render.enable_state(graphics.STATE_CULL_FACE)
 		render.draw(self.tile_pred, {constants = self.noshadow_buf})
 
-		-- Planar shadows
+		-- Planar shadows (stencil prevents multi-mesh overdraw)
 		render.set_depth_mask(false)
 		render.enable_state(graphics.STATE_BLEND)
 		render.disable_state(graphics.STATE_CULL_FACE)
+		render.enable_state(graphics.STATE_STENCIL_TEST)
+		render.set_stencil_func(graphics.COMPARE_FUNC_NOTEQUAL, 1, 0xff)
+		render.set_stencil_op(graphics.STENCIL_OP_KEEP, graphics.STENCIL_OP_KEEP, graphics.STENCIL_OP_REPLACE)
 		render.draw(self.planar_shadow_pred)
+		render.disable_state(graphics.STATE_STENCIL_TEST)
 
 		-- Models
 		render.set_depth_mask(true)

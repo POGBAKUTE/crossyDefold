@@ -122,3 +122,27 @@ components {
   id: "f_preview_bacon"
   component: "/objects/preview_bacon.factory"
 }
+components {
+  id: "f_player_fox"
+  component: "/objects/player_fox.factory"
+}
+components {
+  id: "f_player_goose"
+  component: "/objects/player_goose.factory"
+}
+components {
+  id: "f_preview_fox"
+  component: "/objects/preview_fox.factory"
+}
+components {
+  id: "f_preview_goose"
+  component: "/objects/preview_goose.factory"
+}
+components {
+  id: "f_player_erwin"
+  component: "/objects/player_erwin.factory"
+}
+components {
+  id: "f_preview_erwin"
+  component: "/objects/preview_erwin.factory"
+}
