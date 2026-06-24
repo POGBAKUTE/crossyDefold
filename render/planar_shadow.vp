@@ -14,11 +14,11 @@ void main()
 {
     vec4 world_pos = mtx_world * vec4(position.xyz, 1.0);
 
-    // Near-overhead sun so shadow stays compact directly under the character
-    const vec3 L = normalize(vec3(0.12, 0.99, -0.06));
+    const vec3 L = normalize(vec3(0.30, 0.90, -0.25));
 
-    // Project vertex onto y = 0.01 plane along inverse light direction
-    float t = max(0.0, world_pos.y - 0.01) / L.y;
+    // Cap height at 0.5 so tall chars (Erwin) don't spread shadow far
+    float eff_y = min(world_pos.y, 0.5);
+    float t = max(0.0, eff_y - 0.01) / L.y;
     vec3 proj = world_pos.xyz - t * L;
     proj.y = 0.01;
 

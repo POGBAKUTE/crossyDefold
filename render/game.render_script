@@ -143,9 +143,12 @@ function update(self)
 	render.draw(self.particle_pred)
 	render.disable_state(graphics.STATE_DEPTH_TEST)
 
-	-- GUI
+	-- GUI — reset stencil state so shadow pass doesn't block GUI rendering
 	render.set_view(vmath.matrix4())
 	render.set_projection(vmath.matrix4_orthographic(0, w, 0, h, -1, 1))
+	render.set_stencil_mask(0xff)
+	render.set_stencil_func(graphics.COMPARE_FUNC_ALWAYS, 0, 0xff)
+	render.set_stencil_op(graphics.STENCIL_OP_KEEP, graphics.STENCIL_OP_KEEP, graphics.STENCIL_OP_KEEP)
 	render.enable_state(graphics.STATE_STENCIL_TEST)
 	render.draw(self.gui_pred)
 	render.draw(self.text_pred)
