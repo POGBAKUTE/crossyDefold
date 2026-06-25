@@ -440,6 +440,7 @@ function on_message(self, message_id, message)
 
 	elseif message_id == hash("toggle_shadow") then
 		msg.post("@render:", "toggle_shadow_mode")
+		msg.post("#gui", "shadow_toggled", {})
 
 	elseif message_id == hash("gui_hop") then
 		print("MSG:gui_hop dir=" .. tostring(message.dir) .. " state=" .. tostring(self.state) .. " player_id=" .. tostring(self.player_id) .. " hopping=" .. tostring(self.hopping))

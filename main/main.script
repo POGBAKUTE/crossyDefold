@@ -18,6 +18,7 @@ local NODE_ACTIONS = {
 }
 
 function init(self)
+	print("GAME VERSION: " .. sys.get_config_string("project.version", "unknown"))
 	if html5 then html5.run("window._defoldTap = null;") end
 	msg.post("#", "start")
 end

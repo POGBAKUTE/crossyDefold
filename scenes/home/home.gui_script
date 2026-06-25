@@ -8,7 +8,6 @@ function init(self)
 	self.lbl_characters = gui.get_node("lbl_characters")
 	self.bg             = gui.get_node("bg")
 	self.lbl_play       = gui.get_node("lbl_play")
-	self.lbl_version    = gui.get_node("lbl_version")
 end
 
 function on_input(self, action_id, action)

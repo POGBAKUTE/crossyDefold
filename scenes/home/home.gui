@@ -72,19 +72,6 @@ nodes {
   outline_alpha: 0.0
   inherit_alpha: true
 }
-nodes {
-  position { x: 360.0 y: 100.0 z: 0.2 w: 1.0 }
-  scale { x: 1.8 y: 1.8 z: 1.0 w: 0.0 }
-  size { x: 400.0 y: 50.0 z: 0.0 w: 0.0 }
-  color { x: 0.4 y: 0.4 z: 0.4 w: 1.0 }
-  type: TYPE_TEXT
-  text: "v0.2.0"
-  font: "default"
-  id: "lbl_version"
-  pivot: PIVOT_CENTER
-  inherit_alpha: true
-}
-
 material: "/builtins/materials/gui.material"
 adjust_reference: ADJUST_REFERENCE_PARENT
 max_nodes: 512

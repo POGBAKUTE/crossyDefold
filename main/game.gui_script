@@ -1,5 +1,3 @@
-local VERSION = "v0.2.8"
-
 local CHAR_NAMES = { "Chicken", "Avocoder", "Bacon", "Fox", "Erwin" }
 
 local DOT_ACTIVE   = vmath.vector4(1.0, 1.0, 1.0, 1.0)
@@ -33,6 +31,8 @@ local function show_home(self)
 	gui.set_enabled(self.lbl_shadow,  false)
 	gui.set_enabled(self.btn_home,    false)
 	gui.set_enabled(self.lbl_home,    false)
+	gui.set_enabled(self.btn_sound,   false)
+	gui.set_enabled(self.lbl_sound,   false)
 	-- hide char select
 	gui.set_enabled(self.char_select_bg,   false)
 	gui.set_enabled(self.lbl_char_title,   false)
@@ -84,6 +84,8 @@ local function show_char_select(self, char_idx)
 	gui.set_enabled(self.lbl_shadow,  false)
 	gui.set_enabled(self.btn_home,    false)
 	gui.set_enabled(self.lbl_home,    false)
+	gui.set_enabled(self.btn_sound,   false)
+	gui.set_enabled(self.lbl_sound,   false)
 	gui.set_text(self.lbl_char_name, CHAR_NAMES[char_idx] or "?")
 	update_dots(self, char_idx)
 end
@@ -103,6 +105,8 @@ local function show_gameplay(self)
 	gui.set_enabled(self.lbl_shadow, true)
 	gui.set_enabled(self.btn_home,   true)
 	gui.set_enabled(self.lbl_home,   true)
+	gui.set_enabled(self.btn_sound,  true)
+	gui.set_enabled(self.lbl_sound,  true)
 	-- hide everything else
 	gui.set_enabled(self.title,          false)
 	gui.set_enabled(self.btn_play,       false)
@@ -143,7 +147,6 @@ function init(self)
 	self.lbl_left       = gui.get_node("lbl_left")
 	self.btn_right      = gui.get_node("btn_right")
 	self.lbl_right      = gui.get_node("lbl_right")
-	self.version        = gui.get_node("version")
 	self.fps_node       = gui.get_node("fps")
 	self.btn_shadow     = gui.get_node("btn_shadow_toggle")
 	self.lbl_shadow     = gui.get_node("lbl_shadow")
@@ -172,6 +175,9 @@ function init(self)
 	self.lbl_char_back   = gui.get_node("lbl_char_back")
 	self.btn_home        = gui.get_node("btn_home")
 	self.lbl_home        = gui.get_node("lbl_home")
+	self.btn_sound       = gui.get_node("btn_sound")
+	self.lbl_sound       = gui.get_node("lbl_sound")
+	self.sound_on        = true
 
 	gui.set_enabled(self.overbg,          false)
 	gui.set_enabled(self.over,            false)
@@ -181,16 +187,8 @@ function init(self)
 	gui.set_enabled(self.lbl_best_score,  false)
 	gui.set_enabled(self.hint,            false)
 	gui.set_text(self.score_node, "0")
-	gui.set_text(self.version, VERSION)
 
 	show_gameplay(self)
-
-	gui.set_scale(self.version, vmath.vector4(0.6, 0.6, 1, 1))
-	gui.animate(self.version, gui.PROP_SCALE, vmath.vector4(1.2, 1.2, 1, 1),
-		gui.EASING_OUTBACK, 0.35, 0.1, function()
-			gui.animate(self.version, gui.PROP_SCALE, vmath.vector4(0.9, 0.9, 1, 1),
-				gui.EASING_INOUTSINE, 0.2)
-		end)
 end
 
 function on_message(self, message_id, message)
@@ -275,6 +273,17 @@ function on_input(self, action_id, action)
 			return true
 		elseif pick(self.btn_home, action.x, action.y) then
 			msg.post("#script", "go_home")
+			return true
+		elseif pick(self.btn_sound, action.x, action.y) then
+			self.sound_on = not self.sound_on
+			if self.sound_on then
+				gui.set_text(self.lbl_sound, "SND ON")
+				gui.set_color(self.lbl_sound, vmath.vector4(0.4, 1.0, 0.5, 1))
+			else
+				gui.set_text(self.lbl_sound, "SND OFF")
+				gui.set_color(self.lbl_sound, vmath.vector4(1.0, 0.4, 0.4, 1))
+			end
+			msg.post("#script", "toggle_sound", { enabled = self.sound_on })
 			return true
 		elseif pick(self.btn_shadow, action.x, action.y) then
 			self.shadow_map_on = not self.shadow_map_on

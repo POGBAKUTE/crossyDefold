@@ -1,5 +1,6 @@
 [project]
 title = crossyDefold
+version = 1.0.5
 app_manifest = /game.appmanifest
 dependencies#0 = https://github.com/britzl/monarch/archive/refs/tags/5.2.0.zip
 
