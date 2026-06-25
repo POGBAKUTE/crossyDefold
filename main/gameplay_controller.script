@@ -440,7 +440,6 @@ function on_message(self, message_id, message)
 
 	elseif message_id == hash("toggle_shadow") then
 		msg.post("@render:", "toggle_shadow_mode")
-		msg.post("#gui", "shadow_toggled", {})
 
 	elseif message_id == hash("gui_hop") then
 		print("MSG:gui_hop dir=" .. tostring(message.dir) .. " state=" .. tostring(self.state) .. " player_id=" .. tostring(self.player_id) .. " hopping=" .. tostring(self.hopping))
@@ -470,11 +469,7 @@ function on_input(self, action_id, action)
 	elseif action_id == hash("touch") then
 		if action.pressed then
 			local x, y = action.x, action.y
-			if x >= 350 and y >= 600 then
-				msg.post("@render:", "toggle_shadow_mode")
-				msg.post("#gui", "shadow_toggled", {})
-				return
-			elseif x >= 265 and x <= 375 and y >= 210 and y <= 300 then
+			if x >= 265 and x <= 375 and y >= 210 and y <= 300 then
 				try_hop(self, "up", 1, 0)
 			elseif x >= 265 and x <= 375 and y >= 30 and y <= 120 then
 				try_hop(self, "down", -1, 0)
