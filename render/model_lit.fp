@@ -38,11 +38,13 @@ void main()
     vec3 tint = mix(sky_tint, sun_tint, diff);
     float light = 0.52 + 0.42 * diff + fill;
 
-    float shadow = 1.0;
+    vec4 albedo = texture(tex0, var_texcoord0.xy);
+    vec3 color = albedo.rgb * tint * light;
+
     if (var_use_shadow > 0.5) {
-        shadow = get_shadow();
+        float shadow = get_shadow();
+        color *= shadow;
     }
 
-    vec4 albedo = texture(tex0, var_texcoord0.xy);
-    out_fragColor = vec4(albedo.rgb * tint * light * shadow, 1.0);
+    out_fragColor = vec4(color, 1.0);
 }

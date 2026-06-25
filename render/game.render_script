@@ -16,21 +16,7 @@ function init(self)
 	self.fov  = math.rad(55)
 
 	self.shadow_map_enabled = false
-
-	self.shadow_rt = render.render_target("shadow_map", {
-		[graphics.BUFFER_TYPE_COLOR0_BIT] = {
-			format     = graphics.TEXTURE_FORMAT_RGBA,
-			width      = SHADOW_SIZE, height = SHADOW_SIZE,
-			min_filter = graphics.TEXTURE_FILTER_LINEAR,
-			mag_filter = graphics.TEXTURE_FILTER_LINEAR,
-			u_wrap     = graphics.TEXTURE_WRAP_CLAMP_TO_EDGE,
-			v_wrap     = graphics.TEXTURE_WRAP_CLAMP_TO_EDGE,
-		},
-		[graphics.BUFFER_TYPE_DEPTH_BIT] = {
-			format = graphics.TEXTURE_FORMAT_DEPTH,
-			width  = SHADOW_SIZE, height = SHADOW_SIZE,
-		}
-	})
+	self.shadow_rt = nil
 
 	-- Constant buffers (reused every frame, just values change)
 	self.depth_buf    = render.constant_buffer()
@@ -55,6 +41,22 @@ function update(self)
 	-- Pass 1: shadow depth  (only when shadow map mode is active)
 	-- ---------------------------------------------------------------
 	if self.shadow_map_enabled then
+		if not self.shadow_rt then
+			self.shadow_rt = render.render_target("shadow_map", {
+				[graphics.BUFFER_TYPE_COLOR0_BIT] = {
+					format     = graphics.TEXTURE_FORMAT_RGBA,
+					width      = SHADOW_SIZE, height = SHADOW_SIZE,
+					min_filter = graphics.TEXTURE_FILTER_LINEAR,
+					mag_filter = graphics.TEXTURE_FILTER_LINEAR,
+					u_wrap     = graphics.TEXTURE_WRAP_CLAMP_TO_EDGE,
+					v_wrap     = graphics.TEXTURE_WRAP_CLAMP_TO_EDGE,
+				},
+				[graphics.BUFFER_TYPE_DEPTH_BIT] = {
+					format = graphics.TEXTURE_FORMAT_DEPTH,
+					width  = SHADOW_SIZE, height = SHADOW_SIZE,
+				}
+			})
+		end
 		render.set_render_target(self.shadow_rt)
 		render.set_depth_mask(true)
 		render.clear({
